@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo"Atualizando o Servidor"
+echo "Atualizando o Servidor"
 
 apt-get update
 apt-get upgrade -y
