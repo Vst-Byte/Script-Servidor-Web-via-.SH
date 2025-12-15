@@ -33,7 +33,20 @@ Antes de rodar, é necessário tornar o script executável:
 
 ```bash
 chmod +x script.sh
-
-### 3. Execute o script
+```
+### 3 Execute o script
 Como o script realiza instalações de pacotes, ele deve ser rodado como root (sudo):
+```bash
 sudo ./script.sh
+```
+
+⚠️ Nota Importante
+Este script substitui o conteúdo da pasta /var/www/html/. Certifique-se de que não há arquivos importantes nessa pasta antes de executar o script, ou eles serão sobrescritos pelos arquivos da aplicação.
+
+🛠 Tecnologias Utilizadas
+
+- Shell Script (Bash)
+
+- Apache2
+
+- Git/GitHub (como fonte dos arquivos)
