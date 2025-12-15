@@ -33,3 +33,7 @@ Antes de rodar, é necessário tornar o script executável:
 
 ```bash
 chmod +x script.sh
+
+### 3. Execute o script
+Como o script realiza instalações de pacotes, ele deve ser rodado como root (sudo):
+sudo ./script.sh
