@@ -1,52 +1,75 @@
-# Script de Provisionamento de Servidor Web (Apache2)
+# 🌐 Provisionamento Automatizado de Web Server (Apache2)
 
-Este repositório contém um shell script (`script.sh`) desenvolvido para automatizar o processo de provisionamento de um servidor web em distribuições Linux baseadas em Debian/Ubuntu.
+![Shell Script](https://img.shields.io/badge/Shell_Script-Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![Apache](https://img.shields.io/badge/Server-Apache2-D22128?style=for-the-badge&logo=apache&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-Ubuntu%2FDebian-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
-O script realiza a atualização do sistema, instalação do servidor web Apache, instalação de dependências e o deploy automático de uma aplicação web estática a partir de um repositório remoto.
+> **Infrastructure as Code (IaC):** Script de automação para configuração de servidores web, garantindo agilidade, padronização e redução de erros humanos no processo de deploy.
 
-## 🚀 O que este script faz?
+---
 
-Ao ser executado, o script realiza as seguintes tarefas sequenciais:
+## 📖 Sobre o Projeto
 
-1.  **Atualização do Sistema:** Executa `apt-get update` e `apt-get upgrade` para garantir que o servidor esteja com os pacotes mais recentes.
-2.  **Instalação de Serviços:**
-    * **Apache2:** O servidor web.
-    * **Unzip:** Utilitário para descompactar os arquivos da aplicação.
-3.  **Download da Aplicação:** Baixa o código fonte do repositório `Arquivo.zip do GITHUB` (branch main).
-4.  **Deploy:** Descompacta o arquivo baixado e copia todos os arquivos para o diretório raiz do Apache (`/var/www/html/`), tornando o site acessível imediatamente.
+Este projeto consiste em um script em **Bash** robusto projetado para transformar uma instância Linux "limpa" (raw) em um servidor web operacional em poucos segundos.
 
-## 📋 Pré-requisitos
+O script gerencia todo o ciclo de vida do deploy:
+1.  Atualização de pacotes do sistema operacional.
+2.  Instalação e configuração do serviço HTTP (Apache2).
+3.  Obtenção do código-fonte da aplicação via repositório remoto (GitHub).
+4.  Implantação dos artefatos no diretório público web.
+5.  Limpeza de arquivos temporários e ajuste de permissões de segurança.
 
-* Um sistema operacional Linux baseado em Debian (ex: Ubuntu, Debian, Kali Linux, Mint).
-* Acesso à internet no servidor.
-* Privilégios de superusuário (**Root**) ou acesso via `sudo`.
+### 🏗️ Arquitetura do Processo
 
-## ⚙️ Como executar
-
-Siga os passos abaixo para rodar o script no seu servidor:
-
-### 1. Clone o repositório ou crie o arquivo
-Se você já tem o arquivo, pule para o passo 2. Caso contrário, crie um arquivo chamado `script.sh` e cole o conteúdo.
-
-### 2. Dê permissão de execução
-Antes de rodar, é necessário tornar o script executável:
-
-```bash
-chmod +x script.sh
+```mermaid
+graph TD;
+    A[Admin/User] -->|Executa Script| B(Servidor Linux);
+    B -->|apt update/install| C[Repositórios Debian/Ubuntu];
+    B -->|wget| D[GitHub - Código Fonte];
+    D -->|Download .zip| B;
+    B -->|Unzip & Move| E["/var/www/html"];
+    B -->|Restart Service| F[Apache Daemon];
+    G[Cliente Web] -->|HTTP Request| F;
+    F -->|Serve| E;
 ```
-### 3 Execute o script
-Como o script realiza instalações de pacotes, ele deve ser rodado como root (sudo):
+----------------------------------------------------------------------------------
+### ⚙️ Funcionalidades Técnicas
+🛡️ Verificação de Privilégios (EUID Check): O script valida automaticamente se o usuário possui permissões de root. Caso contrário, a execução é interrompida para evitar falhas parciais.
+
+♻️ Idempotência (Preparação de Ambiente): Antes de copiar os novos arquivos, o script limpa o diretório alvo (/var/www/html). Isso garante que deploys subsequentes não misturem versões antigas com novas (evitando "lixo" de versões anteriores).
+
+🧹 Gestão de Resíduos: O download e a extração ocorrem em /tmp. Após a instalação, todos os arquivos temporários são removidos, mantendo o sistema de arquivos do servidor limpo.
+
+🔇 "Quiet Mode" Inteligente: Comandos verbosos (como apt-get e unzip) têm suas saídas técnicas suprimidas (> /dev/null), exibindo ao operador apenas logs de status claros e formatados.
+
+🔒 Hardening Básico: Aplica chown -R www-data nos arquivos implantados, garantindo que o processo do Apache tenha as permissões exatas de leitura/escrita, seguindo o princípio do menor privilégio necessário.
+
+### 🚀 Como Utilizar
+Pré-requisitos
+- Um servidor rodando Ubuntu (20.04/22.04/24.04) ou Debian.
+
+- Acesso à internet na máquina (portas 80/443 liberadas para saída).
+
+- Porta 80 liberada no Firewall para entrada (HTTP).
+
+#### Passo a Passo
+1. Clone ou crie o script no servidor:
 ```bash
-sudo ./script.sh
+nano script_servidor_web.sh
+```
+2. Torne o arquivo executável:
+```bash
+chmod +x script_servidor_web.sh
+```
+3. Execute (requer privilégios elevados):
+```bash
+sudo ./script_servidor_web.sh
 ```
 
-⚠️ Nota Importante
-Este script substitui o conteúdo da pasta /var/www/html/. Certifique-se de que não há arquivos importantes nessa pasta antes de executar o script, ou eles serão sobrescritos pelos arquivos da aplicação.
-
-🛠 Tecnologias Utilizadas
-
-- Shell Script (Bash)
-
-- Apache2
-
-- Git/GitHub (como fonte dos arquivos)
+### 🔧 Personalização
+O script foi desenhado com variáveis no topo para facilitar a adaptação para outros projetos sem necessidade de refatorar o código lógico.
+| Variável | Descrição | Padrão |
+| -------- | -------- | -------- |
+| REPO_URL | URL direta para o arquivo .zip do repositório | .../main.zip |
+| DIR_APACHE | Diretório raiz do servidor web | /var/www/html |
+| NOME_ARQUIVO | Nome temporário do arquivo baixado | main.zip |
