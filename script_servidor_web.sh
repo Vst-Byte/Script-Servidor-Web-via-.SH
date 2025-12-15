@@ -9,7 +9,7 @@ PASTA_DESCOMPACTADA="Projeto-Site-Pessoal-main"
 # --- 1. VERIFICAÇÃO DE PERMISSÃO ---
 # Se o usuário não for root (id 0), o script para.
 if [ "$EUID" -ne 0 ]; then
-  echo "❌ Por favor, execute como root (sudo ./script.sh)"
+  echo "❌ Por favor, execute como root (sudo ./script_servidor_web.sh)"
   exit 1
 fi
 
